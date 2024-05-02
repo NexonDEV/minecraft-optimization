@@ -1,14 +1,14 @@
 ### [🇺🇸 English Version](../README.md)
 
-# Minecraft server optimization guide
+# Optymizacja serwera Minecraft
 
-Note for users that are on vanilla, Fabric or Spigot (or anything below Paper) - go to your server.properties and change `sync-chunk-writes` to `false`. This option is forcibly set to false on Paper and its forks, but on other server implementations you need to switch this to false manually. This allows the server to save chunks off the main thread, lessening the load on the main tick loop.
+Informacja dla użytkowników Vanili, Fabrica, Spigota (lub innych silników nie będących Paperem lub jego forkami): Przejdź do pliku `server.properties` i zmień opcję `sync-chunk-writes` na `false`. Paper i jego forki wymusza wyłączenie tej opcji, natomiast w przypadku innych silników serwerowych trzeba robić to manualnie. Pozwala to serwerowi na zapisywanie chunków poza głównym wątkiem, zmniejszając tym samym obciążenie na głównej pętli tickowania serwera.
 
-Guide for version 1.20. Some things may still apply to 1.15 - 1.19.
+**Poradnik przeznaczony dla wersji 1.20. Niektóre podane tutaj tweaki mogą działać także na wersjach 1.15 - 1.19.**
 
-Based on [this guide](https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/) and other sources (all of them are linked throughout the guide when relevant).
+Bazowany na [tym poradniku](https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/) oraz innych źródłach (linki do nich znajdują się w odpowiednich miejscach w poradniku).
 
-Use the table of contents located above (next to `README.md`) to easily navigate throughout this guide.
+Użyj spisu treści znajdującego się u góry (obok `README.md`) aby łatwiej poruszać się między sekcjami poradnika.
 
 # Intro
 There will never be a guide that will give you perfect results. Each server has their own needs and limits on how much you can or are willing to sacrifice. Tinkering around with the options to fine tune them to your servers needs is what it's all about. This guide only aims to help you understand what options have impact on performance and what exactly they change. If you think you found inaccurate information within this guide, you're free to open an issue or set up a pull request to correct it.
