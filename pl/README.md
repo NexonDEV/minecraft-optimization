@@ -1,4 +1,4 @@
-### [🇵🇱 Polish Version](../README.md)
+### [🇺🇸 English Version](../README.md)
 
 # Minecraft server optimization guide
 
