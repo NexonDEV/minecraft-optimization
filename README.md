@@ -4,7 +4,7 @@
 
 Note for users that are on vanilla, Fabric or Spigot (or anything below Paper) - go to your server.properties and change `sync-chunk-writes` to `false`. This option is forcibly set to false on Paper and its forks, but on other server implementations you need to switch this to false manually. This allows the server to save chunks off the main thread, lessening the load on the main tick loop.
 
-Guide for version 1.19. Some things may still apply to 1.15 - 1.18.
+Guide for version 1.20. Some things may still apply to 1.15 - 1.19.
 
 Based on [this guide](https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/) and other sources (all of them are linked throughout the guide when relevant).
 
@@ -186,9 +186,9 @@ This option sets how often (in ticks) the server attempts to spawn certain livin
 
 #### mob-spawn-range
 
-`Good starting value: 2`
+`Good starting value: 3`
 
-Allows you to reduce the range (in chunks) of where mobs will spawn around the player. Depending on your server's gamemode and its playercount you might want to reduce this value along with [bukkit.yml]'s `spawn-limits`. Setting this lower will make it feel as if there are more mobs around you. This should be lower than or equal to your view distance, and never larger than your hard despawn range / 16.
+Allows you to reduce the range (in chunks) of where mobs will spawn around the player. Depending on your server's gamemode and its playercount you might want to reduce this value along with [bukkit.yml]'s `spawn-limits`. Setting this lower will make it feel as if there are more mobs around you. This should be lower than or equal to your simulation distance, and never larger than your hard despawn range / 16.
 
 #### entity-activation-range
 
@@ -240,28 +240,28 @@ You can make mobs spawned by a monster spawner have no AI. Nerfed mobs will do n
 Good starting values:
 
       ambient:
-        hard: 56
+        hard: 72
         soft: 30
       axolotls:
-        hard: 56
+        hard: 72
         soft: 30
       creature:
-        hard: 56
+        hard: 72
         soft: 30
       misc:
-        hard: 56
+        hard: 72
         soft: 30
       monster:
-        hard: 56
+        hard: 72
         soft: 30
       underground_water_creature:
-        hard: 56
+        hard: 72
         soft: 30
       water_ambient:
-        hard: 56
+        hard: 72
         soft: 30
       water_creature:
-        hard: 56
+        hard: 72
         soft: 30
 ```
 
@@ -377,12 +377,6 @@ Enabling this will cause zombies to stop targeting villagers if the server is be
 
 This option can disable portal usage of all entities besides the player. This prevents entities from loading chunks by changing worlds which is handled on the main thread. This has the side effect of entities not being able to go through portals.
 
-#### villager.brain-ticks
-
-`Good starting value: 2`
-
-This option allows you to set how often (in ticks) villager brains (work and poi) will tick. Going higher than `3` is confirmed to make villagers inconsistent/buggy.
-
 #### villager.lobotomize.enabled
 
 `Good starting value: true`
@@ -390,6 +384,17 @@ This option allows you to set how often (in ticks) villager brains (work and poi
 > This should only be enabled if villagers are causing lag! Otherwise, the pathfinding checks may decrease performance.
 
 Lobotomized villagers are stripped from their AI and only restock their offers every so often. Enabling this will lobotomize villagers that are unable to pathfind to their destination. Freeing them should unlobotomize them.
+
+#### villager.search-radius
+
+```
+Good starting values:
+
+          acquire-poi: 16
+          nearest-bed-sensor: 16
+```
+
+Radius within which villagers will search for job site blocks and beds. This significantly boosts performance with large amount of villagers, but will prevent them from detecting job site blocks or beds that are further away than set value.
 
 ---
 
@@ -406,7 +411,7 @@ Good starting values:
       exp: 4.0
 ```
 
-This decides the distance between the items and exp orbs to be merged, reducing the amount of items ticking on the ground. Setting this too high will lead to the illusion of items or exp orbs disappearing as they merge together. Setting this too high will break some farms, as well as allow items to teleport through blocks. There are no checks done to prevent items from merging through walls. Exp is only merged on creation.
+This decides the distance between the items and exp orbs to be merged, reducing the amount of items ticking on the ground. Setting this too high will lead to the illusion of items or exp orbs disappearing as they merge together. Setting this too high will break some farms, as well as allow items to teleport through blocks. There are no checks done to prevent items from merging through walls (unless Paper's `fix-items-merging-through-walls` setting is activated). Exp is only merged on creation.
 
 #### hopper-transfer
 
@@ -435,7 +440,7 @@ Good starting values:
         red_sand: 300
         gravel: 300
         dirt: 300
-        grass: 300
+        short_grass: 300
         pumpkin: 300
         melon_slice: 300
         kelp: 300
@@ -574,10 +579,10 @@ If this option is greater that `0`, players above the set y level will be damage
 ---
 
 # Java startup flags
-[Vanilla Minecraft and Minecraft server software in version 1.19 requires Java 17 or higher](https://docs.papermc.io/java-install-update). Oracle has changed their licensing, and there is no longer a compelling reason to get your java from them. Recommended vendors are [Adoptium](https://adoptium.net/) and [Amazon Corretto](https://aws.amazon.com/corretto/). Alternative JVM implementations such as OpenJ9 or GraalVM can work, however they are not supported by Paper and have been known to cause issues, therefore they are not currently recommended.
+[Vanilla Minecraft and Minecraft server software in version 1.20.5+ requires Java 21 or higher](https://docs.papermc.io/java-install-update). Oracle has changed their licensing, and there is no longer a compelling reason to get your java from them. Recommended vendors are [Adoptium](https://adoptium.net/) and [Amazon Corretto](https://aws.amazon.com/corretto/). Alternative JVM implementations such as OpenJ9 or GraalVM can work, however they are not supported by Paper and have been known to cause issues, therefore they are not currently recommended.
 
 Your garbage collector can be configured to reduce lag spikes caused by big garbage collector tasks. You can find startup flags optimized for Minecraft servers [here](https://docs.papermc.io/paper/aikars-flags) [`SOG`]. Keep in mind that this recommendation will not work on alternative JVM implementations.
-It's recommended to use the [flags.sh](https://docs.papermc.io/paper/aikars-flags) startup flags generator to get the correct startup flags for your server
+It's recommended to use the [flags.sh](https://flags.sh) startup flags generator to get the correct startup flags for your server
 
 In addition, adding the beta flag `--add-modules=jdk.incubator.vector` before `-jar` in your startup flags can improve performance. This flag enables Pufferfish to use SIMD instructions on your CPU, making some maths faster. Currently, it's only used for making rendering in game plugin maps (like imageonmaps) possibly 8 times faster.
 
@@ -605,12 +610,16 @@ Way to see what might be going on when your server is lagging are Timings. Timin
 
 To get Timings of your server, you just need to execute the `/timings paste` command and click the link you're provided with. You can share this link with other people to let them help you. It's also easy to misread if you don't know what you're doing. There is a detailed [video tutorial by Aikar](https://www.youtube.com/watch?v=T4J0A9l7bfQ) on how to read them.
 
+---
+
+# Minecraft exploits and how to fix them
+To see how to fix exploits that can cause lag spikes or crashes on a Minecraft server, refer to [here](https://github.com/YouHaveTrouble/minecraft-exploits-and-how-to-fix-them).
+
 [`SOG`]: https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/
-[server.properties]: https://minecraft.fandom.com/wiki/Server.properties
-[bukkit.yml]: https://bukkit.fandom.com/wiki/Bukkit.yml
-[spigot.yml]: https://www.spigotmc.org/wiki/spigot-configuration/
+[server.properties]: https://docs.papermc.io/paper/reference/server-properties
+[bukkit.yml]: https://docs.papermc.io/paper/reference/bukkit-configuration
+[spigot.yml]: https://docs.papermc.io/paper/reference/spigot-configuration
 [paper-global configuration]: https://docs.papermc.io/paper/reference/global-configuration
 [paper-world configuration]: https://docs.papermc.io/paper/reference/world-configuration
 [purpur.yml]: https://purpurmc.org/docs/Configuration/
 [pufferfish.yml]: https://docs.pufferfish.host/setup/pufferfish-fork-configuration/
-[Petal]: https://github.com/Bloom-host/Petal
